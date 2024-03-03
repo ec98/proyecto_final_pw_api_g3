@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,9 @@ import com.uce.edu.demo.service.IGestorClienteService;
 import com.uce.edu.demo.service.IGestorReporteService;
 import com.uce.edu.demo.service.IReservaService;
 import com.uce.edu.demo.service.to.ReservaTo;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping(path = "/reservas")
@@ -46,10 +50,17 @@ public class ReservaControllerRestFull {
 		return ResponseEntity.status(HttpStatus.OK).body(this.reservaService.buscarPorId(id));
 	}
 
-	@GetMapping(path = "/fechasReservas", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ReservaTo>> buscarFechasDispoFechas(@RequestParam LocalDateTime fechaInicio,
-			@RequestParam LocalDateTime fechaFin) {
+	@PostMapping(path = "/fechasReservas", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ReservaTo>> buscarFechasDispoFechas(@RequestBody Reserva reserva,
+			@RequestParam LocalDateTime fechaInicio, @RequestParam LocalDateTime fechaFin) {
 		List<ReservaTo> lsres = this.gestorReporteService.reporteReservas(fechaInicio, fechaFin);
+
+		for (ReservaTo reservato : lsres) {
+			Link link = linkTo(methodOn(ReservaControllerRestFull.class).buscarFechaReservaDispo(reserva))
+					.withRel("Fecha Disponible");
+			reservato.add(link);
+		}
+
 		return ResponseEntity.status(HttpStatus.OK).body(lsres);
 	}
 
@@ -64,7 +75,7 @@ public class ReservaControllerRestFull {
 		this.reservaService.eliminar(id);
 	}
 
-	@GetMapping(path = "/fechaReservaDisponible", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/fechaReservaDisponible", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LocalDateTime> buscarFechaReservaDispo(@RequestBody Reserva reserva) {
 		LocalDateTime r = this.gestorClienteService.buscarFechaDisponible(reserva);
 		return ResponseEntity.status(HttpStatus.OK).body(r);
