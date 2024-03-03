@@ -1,5 +1,6 @@
 package com.uce.edu.demo.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,25 +18,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uce.edu.demo.modelo.Cliente;
+import com.uce.edu.demo.modelo.Reserva;
+import com.uce.edu.demo.modelo.Vehiculo;
 import com.uce.edu.demo.service.IClienteService;
 import com.uce.edu.demo.service.IGestorClienteService;
-import com.uce.edu.demo.service.IGestorReporteService;
 
 @RestController
 @RequestMapping(path = "/clientes")
 public class ClienteControllerRestFull {
 
 	@Autowired
-	private IGestorReporteService gestorReporteService;
+	private IClienteService clienteService;
 
 	@Autowired
 	private IGestorClienteService gestorClienteService;
 
-	@Autowired
-	private IClienteService clienteService;
-
 	// CLIENTE
-
 	@PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void updateCliente(@RequestBody Cliente cliente) {
 		this.clienteService.actualizar(cliente);
@@ -59,10 +57,28 @@ public class ClienteControllerRestFull {
 		return ResponseEntity.status(HttpStatus.OK).body(cliente);
 	}
 
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/clienteApellido", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Cliente>> buscarClientePorApellido(@RequestParam String apellido) {
 		List<Cliente> cApe = this.clienteService.buscarPorApellido(apellido);
 		return ResponseEntity.status(HttpStatus.OK).body(cApe);
+	}
+
+	@PostMapping(path = "/reserva/guardarCliente", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void guardarClienteReserva(@RequestBody Cliente cliente) {
+		this.gestorClienteService.registrarCliente(cliente);
+	}
+
+	@PutMapping(path = "/reserva/actualizarCliente", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void actualizarClienteReserva(@RequestBody Cliente cliente) {
+		this.gestorClienteService.actualizarCliente(cliente);
+	}
+
+	@GetMapping(path = "/calcular/{numeroTargeta}/{fechaInicio}/{fechaFin}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Reserva> obtainValores(@RequestBody Vehiculo vehiculo, @RequestBody Cliente cliente,
+			@PathVariable String numeroTargeta, @PathVariable LocalDateTime fechaInicio,
+			@PathVariable LocalDateTime fechaFin) {
+		Reserva r = this.gestorClienteService.calcularValores(numeroTargeta, vehiculo, cliente, fechaInicio, fechaFin);
+		return ResponseEntity.status(HttpStatus.OK).body(r);
 	}
 
 }

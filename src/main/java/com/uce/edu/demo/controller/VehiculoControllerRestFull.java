@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uce.edu.demo.modelo.Vehiculo;
+import com.uce.edu.demo.service.IGestorClienteService;
 import com.uce.edu.demo.service.IGestorEmpleadoService;
 import com.uce.edu.demo.service.IVehiculoService;
 import com.uce.edu.demo.service.to.VehiculoTo;
@@ -33,6 +34,9 @@ public class VehiculoControllerRestFull {
 
 	@Autowired
 	private IGestorEmpleadoService gestorEmpleadoService;
+
+	@Autowired
+	private IGestorClienteService gestorClienteService;
 
 	// VEHICULO
 
@@ -48,19 +52,19 @@ public class VehiculoControllerRestFull {
 	}
 
 	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Vehiculo> buscarVehiculoId(@PathVariable int id) {
-		Vehiculo v = this.vehiculoService.buscar(id);
+	public ResponseEntity<VehiculoTo> buscarVehiculoId(@PathVariable int id) {
+		VehiculoTo v = this.vehiculoService.buscarId(id);
+
+		Link link = linkTo(methodOn(VehiculoControllerRestFull.class).consultarVehiculosPorMarca(v.getMarca()))
+				.withRel("Id Marca Vehiculo");
+		v.add(link);
+
 		return ResponseEntity.status(HttpStatus.OK).body(v);
 	}
 
-	@GetMapping(path = "/marca", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/buscarVehiculo", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<VehiculoTo>> consultarVehiculosPorMarca(@RequestParam String marca) {
 		List<VehiculoTo> vls = this.vehiculoService.buscarPorMarcaTo(marca);
-		for (VehiculoTo vehiculo : vls) {
-			Link link = linkTo(methodOn(VehiculoControllerRestFull.class).buscarVehiculoId(vehiculo.getId()))
-					.withRel("Vehiculos Marca");
-			vehiculo.add(link);
-		}
 		return ResponseEntity.status(HttpStatus.OK).body(vls);
 	}
 
@@ -75,4 +79,12 @@ public class VehiculoControllerRestFull {
 		boolean check = this.gestorEmpleadoService.retirarVehiculoReservado(reserva);
 		return ResponseEntity.status(HttpStatus.OK).body(check).toString();
 	}
+
+	@GetMapping(path = "/disponibleVehiculo", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<VehiculoTo>> buscarVehiculoDisponible(@RequestParam String marca,
+			@RequestParam String modelo) {
+		List<VehiculoTo> lsto = this.gestorClienteService.buscarVehiculoToDisponble(marca, modelo);
+		return ResponseEntity.status(HttpStatus.OK).body(lsto);
+	}
+
 }

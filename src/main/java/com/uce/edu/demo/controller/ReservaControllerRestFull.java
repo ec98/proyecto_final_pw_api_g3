@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uce.edu.demo.modelo.Reserva;
+import com.uce.edu.demo.service.IGestorClienteService;
+import com.uce.edu.demo.service.IGestorReporteService;
 import com.uce.edu.demo.service.IReservaService;
+import com.uce.edu.demo.service.to.ReservaTo;
 
 @RestController
 @RequestMapping(path = "/reservas")
@@ -25,6 +28,12 @@ public class ReservaControllerRestFull {
 
 	@Autowired
 	private IReservaService reservaService;
+
+	@Autowired
+	private IGestorReporteService gestorReporteService;
+
+	@Autowired
+	private IGestorClienteService gestorClienteService;
 
 	// RESERVA
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -38,9 +47,9 @@ public class ReservaControllerRestFull {
 	}
 
 	@GetMapping(path = "/fechasReservas", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Reserva>> buscarFechasDispoFechas(@RequestParam LocalDateTime fechaInicio,
+	public ResponseEntity<List<ReservaTo>> buscarFechasDispoFechas(@RequestParam LocalDateTime fechaInicio,
 			@RequestParam LocalDateTime fechaFin) {
-		List<Reserva> lsres = this.reservaService.buscarReservaFechas(fechaInicio, fechaFin);
+		List<ReservaTo> lsres = this.gestorReporteService.reporteReservas(fechaInicio, fechaFin);
 		return ResponseEntity.status(HttpStatus.OK).body(lsres);
 	}
 
@@ -54,4 +63,11 @@ public class ReservaControllerRestFull {
 	public void eliminarReserva(@PathVariable int id) {
 		this.reservaService.eliminar(id);
 	}
+
+	@GetMapping(path = "/fechaReservaDisponible", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LocalDateTime> buscarFechaReservaDispo(@RequestBody Reserva reserva) {
+		LocalDateTime r = this.gestorClienteService.buscarFechaDisponible(reserva);
+		return ResponseEntity.status(HttpStatus.OK).body(r);
+	}
+
 }

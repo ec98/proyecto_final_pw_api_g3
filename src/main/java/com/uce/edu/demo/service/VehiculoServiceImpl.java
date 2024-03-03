@@ -104,4 +104,11 @@ public class VehiculoServiceImpl implements IVehiculoService {
 		return lsfinal;
 	}
 
+	@Override
+	public VehiculoTo buscarId(Integer id) {
+		// TODO Auto-generated method stub
+		VehiculoTo vto = this.convertTo(this.buscar(id));
+		return vto;
+	}
+
 }
