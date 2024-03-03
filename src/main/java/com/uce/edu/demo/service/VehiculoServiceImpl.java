@@ -111,4 +111,10 @@ public class VehiculoServiceImpl implements IVehiculoService {
 		return vto;
 	}
 
+	@Override
+	public List<Vehiculo> observarTodos() {
+		// TODO Auto-generated method stub
+		return this.vehiculoRepository.buscarAll();
+	}
+
 }

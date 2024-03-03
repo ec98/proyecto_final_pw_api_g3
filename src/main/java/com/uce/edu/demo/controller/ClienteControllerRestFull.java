@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uce.edu.demo.modelo.Cliente;
 import com.uce.edu.demo.modelo.Reserva;
-import com.uce.edu.demo.modelo.Vehiculo;
 import com.uce.edu.demo.service.IClienteService;
 import com.uce.edu.demo.service.IGestorClienteService;
 
@@ -34,8 +33,9 @@ public class ClienteControllerRestFull {
 	private IGestorClienteService gestorClienteService;
 
 	// CLIENTE
-	@PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void updateCliente(@RequestBody Cliente cliente) {
+	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void updateCliente(@RequestBody Cliente cliente, @PathVariable int id) {
+		cliente.setId(id);
 		this.clienteService.actualizar(cliente);
 	}
 
@@ -68,16 +68,18 @@ public class ClienteControllerRestFull {
 		this.gestorClienteService.registrarCliente(cliente);
 	}
 
-	@PutMapping(path = "/reserva/actualizarCliente", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void actualizarClienteReserva(@RequestBody Cliente cliente) {
+	@PutMapping(path = "/reserva/{id}/actualizarCliente", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void actualizarClienteReserva(@RequestBody Cliente cliente, @PathVariable int id) {
+		cliente.setId(id);
 		this.gestorClienteService.actualizarCliente(cliente);
 	}
 
-	@GetMapping(path = "/calcular/{numeroTargeta}/{fechaInicio}/{fechaFin}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Reserva> obtainValores(@RequestBody Vehiculo vehiculo, @RequestBody Cliente cliente,
-			@PathVariable String numeroTargeta, @PathVariable LocalDateTime fechaInicio,
-			@PathVariable LocalDateTime fechaFin) {
-		Reserva r = this.gestorClienteService.calcularValores(numeroTargeta, vehiculo, cliente, fechaInicio, fechaFin);
+	@PostMapping(path = "/calcular/{numeroTargeta}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Reserva> obtainValores(@RequestBody Reserva reserva, @PathVariable String numeroTargeta,
+			@RequestParam LocalDateTime fechaInicio, @RequestParam LocalDateTime fechaFin) {
+
+		Reserva r = this.gestorClienteService.calcularValores(numeroTargeta, reserva.getVehiculo(),
+				reserva.getCliente(), fechaInicio, fechaFin);
 		return ResponseEntity.status(HttpStatus.OK).body(r);
 	}
 

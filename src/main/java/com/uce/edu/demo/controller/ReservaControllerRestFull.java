@@ -53,7 +53,7 @@ public class ReservaControllerRestFull {
 		return ResponseEntity.status(HttpStatus.OK).body(lsres);
 	}
 
-	@GetMapping(path = "/reserva/{numero}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/reservaNumero/{numero}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Reserva> buscarReservaNumero(@PathVariable String numero) {
 		Reserva r = this.reservaService.buscarPorNumero(numero);
 		return ResponseEntity.status(HttpStatus.OK).body(r);
@@ -64,7 +64,7 @@ public class ReservaControllerRestFull {
 		this.reservaService.eliminar(id);
 	}
 
-	@GetMapping(path = "/fechaReservaDisponible", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/fechaReservaDisponible", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LocalDateTime> buscarFechaReservaDispo(@RequestBody Reserva reserva) {
 		LocalDateTime r = this.gestorClienteService.buscarFechaDisponible(reserva);
 		return ResponseEntity.status(HttpStatus.OK).body(r);

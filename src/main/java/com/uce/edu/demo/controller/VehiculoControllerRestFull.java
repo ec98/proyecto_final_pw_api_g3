@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,8 +64,8 @@ public class VehiculoControllerRestFull {
 	}
 
 	@GetMapping(path = "/buscarVehiculo", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<VehiculoTo>> consultarVehiculosPorMarca(@RequestParam String marca) {
-		List<VehiculoTo> vls = this.vehiculoService.buscarPorMarcaTo(marca);
+	public ResponseEntity<List<Vehiculo>> consultarVehiculosPorMarca(@RequestParam String marca) {
+		List<Vehiculo> vls = this.vehiculoService.buscarPorMarca(marca);
 		return ResponseEntity.status(HttpStatus.OK).body(vls);
 	}
 
@@ -73,18 +74,37 @@ public class VehiculoControllerRestFull {
 		this.vehiculoService.eliminar(id);
 	}
 
-	// Retirar Vehiculo en Reserva
-	@GetMapping(path = "/{reserva}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public String buscarVehiculoReservado(@PathVariable String reserva) {
-		boolean check = this.gestorEmpleadoService.retirarVehiculoReservado(reserva);
-		return ResponseEntity.status(HttpStatus.OK).body(check).toString();
+	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void actualizarVehiculo(@RequestBody Vehiculo vehiculo, @PathVariable int id) {
+		vehiculo.setId(id);
+		this.vehiculoService.actualizar(vehiculo);
 	}
 
-	@GetMapping(path = "/disponibleVehiculo", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<VehiculoTo>> buscarVehiculoDisponible(@RequestParam String marca,
+	// Retirar Vehiculo en Reserva
+	@GetMapping(path = "/buscarVehiculoReservado/{reserva}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public String buscarVehiculoReservado(@PathVariable String reserva) {
+		boolean check = this.gestorEmpleadoService.retirarVehiculoReservado(reserva);
+		return ResponseEntity.status(HttpStatus.OK).body(!check).toString();
+	}
+
+	@GetMapping(path = "/disponibleVehiculo/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<VehiculoTo>> buscarVehiculoDisponible(@PathVariable int id, @RequestParam String marca,
 			@RequestParam String modelo) {
 		List<VehiculoTo> lsto = this.gestorClienteService.buscarVehiculoToDisponble(marca, modelo);
+		VehiculoTo v = this.vehiculoService.buscarId(id);
+
+		for (VehiculoTo vehiculoTo : lsto) {
+			Link link = linkTo(methodOn(VehiculoControllerRestFull.class).consultarVehiculosPorMarca(v.getMarca()))
+					.withRel("Id Marca Vehiculo");
+			vehiculoTo.add(link);
+		}
+
 		return ResponseEntity.status(HttpStatus.OK).body(lsto);
 	}
 
+	@GetMapping(path = "/vehiculosOriginales", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Vehiculo>> observarVehiculos(){
+		return ResponseEntity.status(HttpStatus.OK).body(this.vehiculoService.observarTodos());
+	}
+	
 }

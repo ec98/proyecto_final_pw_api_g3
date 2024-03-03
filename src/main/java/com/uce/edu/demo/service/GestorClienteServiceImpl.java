@@ -2,6 +2,7 @@ package com.uce.edu.demo.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,8 +87,27 @@ public class GestorClienteServiceImpl implements IGestorClienteService {
 	@Override
 	public List<VehiculoTo> buscarVehiculoToDisponble(String marca, String modelo) {
 		// TODO Auto-generated method stub
-		List<VehiculoTo> listaVehiculos = this.vehiculoService.buscarVehiculoTo(marca, modelo);
-		return listaVehiculos;
+		List<Vehiculo> ls = this.vehiculoService.buscarPorMarcaModelo(marca, modelo);
+		List<VehiculoTo> lsfinal = new ArrayList<VehiculoTo>();
+
+		for (Vehiculo vehiculo : ls) {
+			VehiculoTo convert = this.convert(vehiculo);
+			lsfinal.add(convert);
+		}
+
+		return lsfinal;
+	}
+
+	private VehiculoTo convert(Vehiculo vehiculo) {
+		VehiculoTo vto = new VehiculoTo();
+		vto.setId(vehiculo.getId());
+		vto.setMarca(vehiculo.getMarca());
+		vto.setModelo(vehiculo.getModelo());
+		vto.setPlaca(vehiculo.getPlaca());
+		vto.setAnioFabricacion(vehiculo.getAnioFabricacion());
+		vto.setEstado(vehiculo.getEstado());
+		vto.setValorDia(vehiculo.getValorDia());
+		return vto;
 	}
 
 }

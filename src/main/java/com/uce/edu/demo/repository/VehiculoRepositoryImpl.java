@@ -88,9 +88,7 @@ public class VehiculoRepositoryImpl implements IVehiculoRepository {
 		// TODO Auto-generated method stub
 		TypedQuery<Vehiculo> mQuery = this.entityManager.createQuery("SELECT v FROM Vehiculo v", Vehiculo.class);
 		return mQuery.getResultList();
-	}
-
-	
+	}	
 
 }
 
