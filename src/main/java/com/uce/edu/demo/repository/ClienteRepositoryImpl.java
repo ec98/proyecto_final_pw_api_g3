@@ -48,9 +48,15 @@ public class ClienteRepositoryImpl implements IClienteRepository {
 		// TODO Auto-generated method stub
 		try {
 			TypedQuery<Cliente> myQuery = this.entityManager
-					.createQuery("SELECT c FROM Cliente c WHERE c.cedula = :cedula", Cliente.class);
+					.createQuery("SELECT DISTINCT c FROM Cliente c WHERE c.cedula = :cedula", Cliente.class);
 			myQuery.setParameter("cedula", cedula);
-			return myQuery.getSingleResult();
+			List<Cliente> resultList = myQuery.getResultList();
+
+			if (resultList.isEmpty()) {
+				return null;
+			} else {
+				return resultList.get(0);
+			}
 		} catch (NoResultException e) {
 			return null;
 		}

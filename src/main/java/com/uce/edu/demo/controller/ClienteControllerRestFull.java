@@ -86,8 +86,8 @@ public class ClienteControllerRestFull {
 	}
 
 	// Buscar Por Cedula, luego uso el actualizar normal
-	@GetMapping(path = "/clienteCedula", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Cliente> buscarClientePorCedula(@RequestParam String cedula) {
+	@GetMapping(path = "/clienteCedula/{cedula}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Cliente> buscarClientePorCedula(@PathVariable String cedula) {
 		Cliente cApe = this.clienteService.buscarPorCedula(cedula);
 		return ResponseEntity.status(HttpStatus.OK).body(cApe);
 	}

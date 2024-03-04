@@ -72,8 +72,8 @@ public class VehiculoControllerRestFull {
 		return ResponseEntity.status(HttpStatus.OK).body(vls);
 	}
 
-	@DeleteMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void eliminarVehiculo(@PathVariable int id) {
+	@DeleteMapping(path = "/{id}")
+	public void eliminarVehiculo(@PathVariable Integer id) {
 		this.vehiculoService.eliminar(id);
 	}
 
