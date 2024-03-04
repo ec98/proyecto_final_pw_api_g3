@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +22,6 @@ import com.uce.edu.demo.service.IGestorClienteService;
 import com.uce.edu.demo.service.IGestorReporteService;
 import com.uce.edu.demo.service.IReservaService;
 import com.uce.edu.demo.service.to.ReservaTo;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping(path = "/reservas")
@@ -53,9 +49,10 @@ public class ReservaControllerRestFull {
 	}
 
 	@GetMapping(path = "/fechasReservas", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ReservaTo>> buscarFechasDispoFechas(@RequestParam LocalDateTime fechaInicio, @RequestParam LocalDateTime fechaFin) {
+	public ResponseEntity<List<ReservaTo>> buscarFechasDispoFechas(@RequestParam LocalDateTime fechaInicio,
+			@RequestParam LocalDateTime fechaFin) {
 		List<ReservaTo> lsres = this.gestorReporteService.reporteReservas(fechaInicio, fechaFin);
-		
+
 		return ResponseEntity.status(HttpStatus.OK).body(lsres);
 	}
 
@@ -64,8 +61,6 @@ public class ReservaControllerRestFull {
 		Reserva r = this.reservaService.buscarPorNumero(numero);
 		return ResponseEntity.status(HttpStatus.OK).body(r);
 	}
-	
-	
 
 	@DeleteMapping(path = "/{id}")
 	public void eliminarReserva(@PathVariable int id) {
@@ -76,6 +71,12 @@ public class ReservaControllerRestFull {
 	public ResponseEntity<LocalDateTime> buscarFechaReservaDispo(@RequestBody Reserva reserva) {
 		LocalDateTime r = this.gestorClienteService.buscarFechaDisponible(reserva);
 		return ResponseEntity.status(HttpStatus.OK).body(r);
+	}
+
+	@GetMapping(path = "/totalReservas", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Reserva>> totalReservas() {
+		List<Reserva> lsr = this.reservaService.reporteReservas();
+		return ResponseEntity.status(HttpStatus.OK).body(lsr);
 	}
 
 }

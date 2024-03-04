@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uce.edu.demo.modelo.Cliente;
 import com.uce.edu.demo.modelo.Reserva;
+import com.uce.edu.demo.modelo.Vehiculo;
 import com.uce.edu.demo.service.IClienteService;
 import com.uce.edu.demo.service.IGestorClienteService;
+import com.uce.edu.demo.service.IReservaService;
+import com.uce.edu.demo.service.IVehiculoService;
 
 @RestController
 @RequestMapping(path = "/clientes")
@@ -33,6 +37,12 @@ public class ClienteControllerRestFull {
 
 	@Autowired
 	private IGestorClienteService gestorClienteService;
+
+	@Autowired
+	private IReservaService reservaService;
+
+	@Autowired
+	private IVehiculoService vehiculoService;
 
 	// CLIENTE
 	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -76,13 +86,19 @@ public class ClienteControllerRestFull {
 		this.gestorClienteService.actualizarCliente(cliente);
 	}
 
-	@PostMapping(path = "/calcular/{numeroTargeta}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Reserva> obtainValores(@RequestBody Reserva reserva, @PathVariable String numeroTargeta,
+	@PostMapping(path = "/clienteCalcular/{numeroTargeta}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public void obtainValores(@RequestBody Reserva reserva, @PathVariable String numeroTargeta,
 			@RequestParam LocalDateTime fechaInicio, @RequestParam LocalDateTime fechaFin) {
 
-		Reserva r = this.gestorClienteService.calcularValores(numeroTargeta, reserva.getVehiculo(),
+		Reserva tmp = this.gestorClienteService.calcularValores(numeroTargeta, reserva.getVehiculo(),
 				reserva.getCliente(), fechaInicio, fechaFin);
-		return ResponseEntity.status(HttpStatus.OK).body(r);
+		this.reservaService.insertar(tmp);
+	}
+
+	@GetMapping(path = "/buscarVehiculoPlaca/{placa}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Vehiculo> buscarPorPlaca(@PathVariable String placa) {
+		Vehiculo lsv = this.vehiculoService.buscarPorPlaca(placa);
+		return ResponseEntity.status(HttpStatus.OK).body(lsv);
 	}
 
 	// Buscar Por Cedula, luego uso el actualizar normal

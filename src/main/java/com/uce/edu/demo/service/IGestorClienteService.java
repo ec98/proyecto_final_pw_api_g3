@@ -15,4 +15,5 @@ public interface IGestorClienteService {
 	public void actualizarCliente(Cliente cliente);
 	public Reserva calcularValores(String numeroTarjeta, Vehiculo vehiculo, Cliente cliente, LocalDateTime fechaInicio, LocalDateTime fechaFin);
 	public LocalDateTime buscarFechaDisponible(Reserva reserva);
+	
 }

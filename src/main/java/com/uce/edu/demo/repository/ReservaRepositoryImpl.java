@@ -75,7 +75,8 @@ public class ReservaRepositoryImpl implements IReservaRepository {
 	@Override
 	public List<Reserva> reporteReservas() {
 		// TODO Auto-generated method stub
-		TypedQuery<Reserva> myQuery = this.entityManager.createQuery("SELECT r FROM Reserva r", Reserva.class);
+		TypedQuery<Reserva> myQuery = this.entityManager
+				.createQuery("SELECT r FROM Reserva r ORDER BY r.id DESC", Reserva.class).setMaxResults(1);
 		return myQuery.getResultList();
 	}
 
