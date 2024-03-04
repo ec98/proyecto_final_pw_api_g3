@@ -10,6 +10,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.uce.edu.demo.modelo.Reserva;
 import com.uce.edu.demo.modelo.Vehiculo;
 import com.uce.edu.demo.service.IGestorClienteService;
 import com.uce.edu.demo.service.IGestorEmpleadoService;
@@ -28,6 +30,7 @@ import com.uce.edu.demo.service.to.VehiculoTo;
 
 @RestController
 @RequestMapping(path = "/vehiculos")
+@CrossOrigin
 public class VehiculoControllerRestFull {
 
 	@Autowired
@@ -82,9 +85,15 @@ public class VehiculoControllerRestFull {
 
 	// Retirar Vehiculo en Reserva
 	@GetMapping(path = "/buscarVehiculoReservado/{reserva}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public String buscarVehiculoReservado(@PathVariable String reserva) {
-		boolean check = this.gestorEmpleadoService.retirarVehiculoReservado(reserva);
-		return ResponseEntity.status(HttpStatus.OK).body(!check).toString();
+	public ResponseEntity<Reserva> buscarVehiculoReservado(@PathVariable String reserva) {
+		Reserva check = this.gestorEmpleadoService.retirarVehiculoReservado(reserva);
+		return ResponseEntity.status(HttpStatus.OK).body(check);
+	}
+
+	@GetMapping(path = "/buscarVehiculoSinReserva/{reserva}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Reserva> buscarVehiculoSinReserva(@PathVariable String reserva) {
+		Reserva r = this.gestorEmpleadoService.retirarVehiculoSinReserva(reserva);
+		return ResponseEntity.status(HttpStatus.OK).body(r);
 	}
 
 	@GetMapping(path = "/disponibleVehiculo/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -103,8 +112,8 @@ public class VehiculoControllerRestFull {
 	}
 
 	@GetMapping(path = "/vehiculosOriginales", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Vehiculo>> observarVehiculos(){
+	public ResponseEntity<List<Vehiculo>> observarVehiculos() {
 		return ResponseEntity.status(HttpStatus.OK).body(this.vehiculoService.observarTodos());
 	}
-	
+
 }

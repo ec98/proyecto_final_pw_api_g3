@@ -8,6 +8,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping(path = "/reservas")
+@CrossOrigin
 public class ReservaControllerRestFull {
 
 	@Autowired
@@ -50,17 +52,10 @@ public class ReservaControllerRestFull {
 		return ResponseEntity.status(HttpStatus.OK).body(this.reservaService.buscarPorId(id));
 	}
 
-	@PostMapping(path = "/fechasReservas", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<ReservaTo>> buscarFechasDispoFechas(@RequestBody Reserva reserva,
-			@RequestParam LocalDateTime fechaInicio, @RequestParam LocalDateTime fechaFin) {
+	@GetMapping(path = "/fechasReservas", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ReservaTo>> buscarFechasDispoFechas(@RequestParam LocalDateTime fechaInicio, @RequestParam LocalDateTime fechaFin) {
 		List<ReservaTo> lsres = this.gestorReporteService.reporteReservas(fechaInicio, fechaFin);
-
-		for (ReservaTo reservato : lsres) {
-			Link link = linkTo(methodOn(ReservaControllerRestFull.class).buscarFechaReservaDispo(reserva))
-					.withRel("Fecha Disponible");
-			reservato.add(link);
-		}
-
+		
 		return ResponseEntity.status(HttpStatus.OK).body(lsres);
 	}
 
@@ -69,6 +64,8 @@ public class ReservaControllerRestFull {
 		Reserva r = this.reservaService.buscarPorNumero(numero);
 		return ResponseEntity.status(HttpStatus.OK).body(r);
 	}
+	
+	
 
 	@DeleteMapping(path = "/{id}")
 	public void eliminarReserva(@PathVariable int id) {

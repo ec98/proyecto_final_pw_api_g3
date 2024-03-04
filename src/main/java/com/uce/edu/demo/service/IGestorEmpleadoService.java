@@ -1,6 +1,7 @@
 package com.uce.edu.demo.service;
 
 import com.uce.edu.demo.modelo.Cliente;
+import com.uce.edu.demo.modelo.Reserva;
 import com.uce.edu.demo.modelo.Vehiculo;
 
 public interface IGestorEmpleadoService {
@@ -13,6 +14,8 @@ public interface IGestorEmpleadoService {
 
 	public void actualizarVehiculo(Vehiculo vehiculo);
 
-	public boolean retirarVehiculoReservado(String numeroReserva);
+	public Reserva retirarVehiculoReservado(String numeroReserva);
+
+	public Reserva retirarVehiculoSinReserva(String numeroReserva);
 
 }
