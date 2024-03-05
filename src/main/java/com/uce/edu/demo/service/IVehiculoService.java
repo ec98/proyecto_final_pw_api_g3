@@ -16,6 +16,9 @@ public interface IVehiculoService {
 	public Vehiculo buscarPorPlaca(String placa);
 	public List<Vehiculo> buscarPorMarcaModelo(String marca, String modelo);
 	public List<Vehiculo> buscarPorMarca(String marca);
+	
+	public void updateMarcaVehiculo(Vehiculo vehiculo);
+	
 	public List<VehiculoTo> buscarPorMarcaTo(String marca);
 	public List<VehiculoTo> buscarVehiculoTo(String marca, String modelo);
 	public List<VehiculoTo> buscarTodos();

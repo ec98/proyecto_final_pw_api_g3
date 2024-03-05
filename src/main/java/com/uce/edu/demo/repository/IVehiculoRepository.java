@@ -11,7 +11,9 @@ public interface IVehiculoRepository {
 	public void actualizar(Vehiculo vehiculo);
 	public Vehiculo buscar(Integer id);
 	public void eliminar(Integer id);
-
+	
+	public void updateVehiculoPorMarca(Vehiculo vehiculo);
+	
 	public Vehiculo buscarPorPlaca(String placa);
 	public List<Vehiculo> buscarPorMarcaModelo(String marca, String modelo);
 	public List<Vehiculo> buscarPorMarca(String marca);

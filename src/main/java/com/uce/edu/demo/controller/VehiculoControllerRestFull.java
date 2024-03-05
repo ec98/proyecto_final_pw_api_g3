@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.uce.edu.demo.modelo.Cliente;
 import com.uce.edu.demo.modelo.Reserva;
 import com.uce.edu.demo.modelo.Vehiculo;
 import com.uce.edu.demo.service.IGestorClienteService;
@@ -62,11 +63,20 @@ public class VehiculoControllerRestFull {
 		Link link = linkTo(methodOn(VehiculoControllerRestFull.class).consultarVehiculosPorMarca(v.getMarca()))
 				.withRel("Id Marca Vehiculo");
 		v.add(link);
-
 		return ResponseEntity.status(HttpStatus.OK).body(v);
 	}
 
-	@GetMapping(path = "/buscarVehiculo", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/vehiOriginal/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Vehiculo> obtainVehiculoId(@PathVariable int id) {
+		return ResponseEntity.status(HttpStatus.OK).body(this.vehiculoService.buscar(id));
+	}
+
+	@PutMapping(path = "/buscarVehiculo", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void updateVehiculoPorMarca(@RequestBody Vehiculo vehiculo) {
+		this.vehiculoService.updateMarcaVehiculo(vehiculo);
+	}
+
+	@GetMapping(path = "/consultListVehiculos", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Vehiculo>> consultarVehiculosPorMarca(@RequestParam String marca) {
 		List<Vehiculo> vls = this.vehiculoService.buscarPorMarca(marca);
 		return ResponseEntity.status(HttpStatus.OK).body(vls);
