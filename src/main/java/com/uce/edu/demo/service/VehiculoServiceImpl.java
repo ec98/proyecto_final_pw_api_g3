@@ -117,4 +117,10 @@ public class VehiculoServiceImpl implements IVehiculoService {
 		return this.vehiculoRepository.buscarAll();
 	}
 
+	@Override
+	public void updateMarcaVehiculo(Vehiculo vehiculo) {
+		// TODO Auto-generated method stub
+		this.vehiculoRepository.updateVehiculoPorMarca(vehiculo);
+	}
+
 }
